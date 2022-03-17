@@ -97,3 +97,4 @@ build
 *.cpython-*.so.1.2
 
 .vscode/
+env/
