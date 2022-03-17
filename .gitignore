@@ -1,0 +1,99 @@
+#Python gitignore
+
+#Python
+*.pyc
+__pycache__
+
+#C extensions
+*.so
+
+# Distribution and packaging
+.Python
+build
+develop-eggs
+dist
+downloads
+eggs
+.eggs
+lib
+lib64
+parts
+sdist
+var
+wheels
+pip-selfcheck.json
+share/python-wheels
+*.egg-info
+.installed.cfg
+*.egg
+MANIFEST
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test/mocking framework
+.mocks
+
+# Standard build of Numpy
+.npth
+
+# distutils
+build
+
+# PyInstaller
+#  Usually these files are written by a python script, and will need to
+#  be deleted. We make an exception for pip, because it is likely to be
+#  written by pip, and is usually in a tempdir.
+*.manifest
+*.spec
+
+# Compiled binary addons for LightGBM
+*.so
+
+# Compiled binary addons for PyTorch
+*.so
+
+# Compiled binary addons for PyTorch
+*.dylib
+
+# Compiled binary addons for PyTorch
+*.dll
+
+# Compiled binary addons for PyTorch
+*.pyd
+
+# Compiled binary addons for PyTorch
+*.pdb
+
+# Compiled binary addons for PyTorch
+*.dSYM
+
+# Compiled binary addons for PyTorch
+*.json
+
+# Compiled binary addons for PyTorch
+*.pyc
+
+# Compiled binary addons for PyTorch
+*.pyo
+
+# Compiled binary addons for PyTorch
+*.cpython-*.so
+
+# Compiled binary addons for PyTorch
+*.so.1
+
+# Compiled binary addons for PyTorch
+*.cpython-*.so.1
+
+# Compiled binary addons for PyTorch
+*.cpython-*.so.1.0
+
+# Compiled binary addons for PyTorch
+*.cpython-*.so.1.1
+
+# Compiled binary addons for PyTorch
+*.cpython-*.so.1.2
+
+.vscode/
