@@ -152,7 +152,7 @@ def main():
 
         tdr, tzp = generateTables(sbox)
 
-        row = highestPairIndexes(tdr, 16)
+        row = highestPairIndexes(tdr, 5)
         sbox.saveInDirectory('HPI', str(row))
 
         pair = pairFromIndex(tzp, row)
