@@ -1,1 +1,2 @@
 bitarray==2.4.0
+numpy==1.22.3
