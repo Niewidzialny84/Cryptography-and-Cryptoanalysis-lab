@@ -1,5 +1,4 @@
 import logging
-from unittest import result
 
 #logging configuration 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
