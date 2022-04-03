@@ -156,7 +156,7 @@ class SHA3():
         return A_prime
 
     # Keccak-p function for string S - Keccak-p[b,nr](S)
-    def __keccak_p(self, b: int, nr: int, S: str) -> str:
+    def __keccak_p(self, b: int, nr: int, S: str) -> bitarray:
         logging.info("Keccap-p function")
 
         w = int(b/25)
@@ -185,6 +185,52 @@ class SHA3():
 
         return S_prime
 
+    # Keccak[c] using Sponge construction
+    def __sponge(self, N: bitarray, c: int = 512, f: list = [1600,24], d: int = 256) -> bitarray:
+        logging.info("Sponge construction")
+
+        # In the sponge construction the message N is padded to P such that length(P) is a multiple of r
+        # Each block of P of length r is then “absorbed” by the sponge by padding it with 0c and XORing it with the current state
+        # Let P = N || pad(r,len(N))
+        # Let n = len(P)/r
+        # Let c = b-r
+        # Let P[0], ... P[n-1] be the unique sequence of strings of length r such that P = P[0] || ... || P[n-1]
+        # Let S=0**b
+        # For i from 0 to n-1: let S=f(S^(P[i] || 0**c))
+        # Let Z be the empty string
+        # Let Z = Z || Trunc(S,r)
+        # If d <= |Z| then return Trunc(Z,d); else continue
+        # Let S = f(S), and continue with step 8
+
+        b, nr = f[0], f[1]
+
+        # Pad N to P
+        P = N.copy()
+        r = b - c
+        pad = (r - (len(P) % r) - 2)
+        logging.info("pad = %d, N-len = %d, r = %d", pad, len(N), r)
+        P.extend(bitarray('1' + '0'*pad + '1'))
+
+        # Calculate n
+        n = len(P) // r
+        logging.info("n = %d", n)
+        Pi = []
+        for i in range(n):
+            Pi.append(P[i*r:(i+1)*r])
+
+        S = bitarray('0'*b)
+        for i in range(n):
+            Pi[i].extend(bitarray('0'*c))
+            S = self.__keccak_p(b, nr, S ^ Pi[i])
+        
+        Z = bitarray('0'*r)
+        
+        while len(Z) < d:
+            S = self.__keccak_p(b, nr, S)
+            Z = Z ^ S[:r]
+
+        return Z[:d]
+    
     # Sha 3-256 execution
     @staticmethod
     def sha3_256(message: str) -> str:
@@ -192,15 +238,16 @@ class SHA3():
         
         # Initialize class
         sha3 = SHA3()
+        
+        # Convert string message to bitarray
+        N = bitarray()
+        N.frombytes(message.encode('utf-8'))
+       
+        # Execute Sponge construction
+        bits = sha3.__sponge(N)
 
-        test_S = bitarray('0110001010101110001010101010101101011011101010000101100011010011111000101010111000101010101010110101101110101000010110001101001111100010101011100010101010101011010110111010100001011000110100111110001010101110001010101010101101011011101010000101100011010011111000101010111000101010101010110101101110101000010110001101001111100010101011100010101010101011010110111010100001011000110100111110001010101110001010101010101101011011101010000101100011010011111000101010111000101010101010110101101110101000010110001101001111100010101011100010101010101011010110111010100001011000110100111110001010101110001010101010101101011011101010000101100011010011111000101010111000101010101010110101101110101000010110001101001111100010101011100010101010101011010110111010100001011000110100111110001010101110001010101010101101011011101010000101100011010011111000101010111000101010101010110101101110101000010110001101001111100010101011100010101010101011010110111010100001011000110100111110001010101110001010101010101101011011101010000101100011010011111000101010111000101010101010110101101110101000010110001101001111100010101011100010101010101011010110111010100001011000110100111110001010101110001010101010101101011011101010000101100011010011111000101010111000101010101010110101101110101000010110001101001111100010101011100010101010101011010110111010100001011000110100111110001010101110001010101010101101011011101010000101100011010011111000101010111000101010101010110101101110101000010110001101001111100010101011100010101010101011010110111010100001011000110100111110001010101110001010101010101101011011101010000101100011010011')
-
-        X = sha3.__keccak_p(b=1600, nr=24, S=test_S)
-
-        logger.info("X: {}".format(X))
-
-        return None
-
+        # Convert bitarray to hexadecimal string
+        return bits.to01()
 
 def main():
     logging.info("Main")
