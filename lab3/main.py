@@ -260,5 +260,9 @@ def main():
     result = SHA3.sha3_256(message)
     logging.info("Result: {}".format(result))
 
+    import hashlib
+    result = hashlib.sha3_256(message.encode('utf-8')).hexdigest()
+    logging.info("Result: {}".format(result))
+
 if __name__ == "__main__":
     main()
