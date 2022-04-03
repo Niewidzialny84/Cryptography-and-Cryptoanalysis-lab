@@ -220,16 +220,19 @@ class SHA3():
 
         S = bitarray('0'*b)
         for i in range(n):
+            logging.info("Iteration Sponge:%d", i)
             Pi[i].extend(bitarray('0'*c))
             S = self.__keccak_p(b, nr, S ^ Pi[i])
         
-        Z = bitarray('0'*r)
+        Z = bitarray()
+        logging.info("S = %s", S)
         
-        while len(Z) < d:
+        while True:
+            logging.info("Z-len = %d", len(Z))
+            Z.extend(S[:r])
+            if d <= len(Z):
+                return Z[:d]
             S = self.__keccak_p(b, nr, S)
-            Z = Z ^ S[:r]
-
-        return Z[:d]
     
     # Sha 3-256 execution
     @staticmethod
@@ -247,7 +250,7 @@ class SHA3():
         bits = sha3.__sponge(N)
 
         # Convert bitarray to hexadecimal string
-        return bits.to01()
+        return bits.tobytes().hex()
 
 def main():
     logging.info("Main")
