@@ -23,7 +23,7 @@ class SHA3():
         for x in range(5):
             for y in range(5):
                 for z in range(w):
-                    A[x, y, z] = S[w*(5*y+x)+z]
+                    A[x, y, z] = S[w*((5*y)+x)+z]
         return A
 
     # Convert A[x,y,z] numpy array to S[w*(5y+x)+z] bitarray
@@ -69,7 +69,7 @@ class SHA3():
         # For all z such that 0 <= z < w let A'[0,0,z] = A[0,0,z]
         # Let (x,y) = (1,0)
         # For t from 0 to 23:
-        #     for all z such that 0 <= z < w let A'[x,y,z] = = A[x,y,(z-(t+1)(t+2))]
+        #     for all z such that 0 <= z < w let A'[x,y,z] = = A[x,y,(z-(t+1)(t+2)/2)]
         #     Let (x,y) = (y, (2*x+3*y)%5)
 
         A_prime = np.zeros((5, 5, w), dtype=np.uint8)
@@ -77,8 +77,8 @@ class SHA3():
         x ,y = 1, 0
         for t in range(24):
             for z in range(w):
-                A_prime[x, y, z] = A[x, y, (z-(t+1)*(t+2))%w]
-            x, y = y, (2*x+3*y)%5
+                A_prime[x, y, z] = A[x, y, (z-((t+1)*(t+2)//2))%w]
+            x, y = y, ((2*x)+(3*y))%5
 
         return A_prime
 
@@ -91,7 +91,7 @@ class SHA3():
         for x in range(5):
             for y in range(5):
                 for z in range(w):
-                    A_prime[x, y, z] = A[(x+3*y)%5, x, z]
+                    A_prime[x, y, z] = A[(x+(3*y))%5, x, z]
 
         return A_prime
     
@@ -148,15 +148,15 @@ class SHA3():
             return R[0]
 
         RC = np.zeros(w, dtype=np.uint8)
-        for j in range(int(log2(w))):
+        for j in range(int(log2(w)) + 1):
             RC[(2**j) - 1] = rc(j+(7*i))
-        
+              
         A_prime[0, 0, :] = A[0, 0, :] ^ RC  
 
         return A_prime
 
     # Keccak-p function for string S - Keccak-p[b,nr](S)
-    def __keccak_p(self, b: int, nr: int, S: str) -> bitarray:
+    def __keccak_p(self, b: int, nr: int, S: bitarray) -> bitarray:
         logging.info("Keccap-p function")
 
         w = int(b/25)
@@ -174,7 +174,7 @@ class SHA3():
         for ir in range(nr):
             logger.info("Iteration Keccak %d", ir)
 
-            A_prime = self.__theta(A, w)
+            A_prime = self.__theta(A_prime, w)
             A_prime = self.__rho(A_prime, w)
             A_prime = self.__pi(A_prime, w)
             A_prime = self.__chi(A_prime, w)
@@ -243,9 +243,9 @@ class SHA3():
         sha3 = SHA3()
         
         # Convert string message to bitarray
-        N = bitarray()
+        N = bitarray(endian='big')
         N.frombytes(message.encode('utf-8'))
-       
+        
         # Execute Sponge construction
         bits = sha3.__sponge(N)
 
